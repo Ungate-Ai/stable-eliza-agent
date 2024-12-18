@@ -52,9 +52,9 @@ Response should be a JSON object array inside a JSON markdown block. Correct res
 \`\`\``;
 
 async function handler(runtime: IAgentRuntime, message: Memory) {
-    const state = await runtime.composeState(message);
-
     console.log("Inside the facts handler");
+
+    const state = await runtime.composeState(message);
 
     const { agentId, roomId } = state;
 

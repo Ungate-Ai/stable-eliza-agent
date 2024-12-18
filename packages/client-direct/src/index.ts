@@ -30,7 +30,6 @@ export const messageHandlerTemplate =
 # Knowledge
 {{knowledge}}
 
-# Task: Generate dialog and actions for the character {{agentName}}.
 About {{agentName}}:
 {{bio}}
 {{lore}}
@@ -48,7 +47,7 @@ Note that {{agentName}} is capable of reading/seeing/hearing various forms of me
 
 {{actions}}
 
-# Instructions: Write the next message for {{agentName}}.
+# Task: Generate dialog and actions for the character {{agentName}}. Use actions where appropriate.
 ` + messageCompletionFooter;
 
 export class DirectClient {

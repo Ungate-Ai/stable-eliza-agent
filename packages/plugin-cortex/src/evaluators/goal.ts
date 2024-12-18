@@ -55,8 +55,6 @@ async function handler(
     state: State | undefined,
     options: { [key: string]: unknown } = { onlyInProgress: true }
 ): Promise<Goal[]> {
-
-    console.log("Inside the goal handler");
     // get goals
     let goalsData = await getGoals({
         runtime,
