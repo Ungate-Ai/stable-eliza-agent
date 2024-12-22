@@ -14,9 +14,11 @@ import {
     stringToUuid,
     elizaLogger,
     getEmbeddingZeroVector,
+    generateText
 } from "@ai16z/eliza";
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
+import { UserData, extractUserData, getCacheKey } from "./types.ts";
 
 export const twitterMessageHandlerTemplate =
     `
@@ -63,6 +65,7 @@ PRIORITY RULE: ALWAYS RESPOND to these users regardless of topic or message cont
 For other users:
 - {{agentName}} should RESPOND to messages directed at them
 - {{agentName}} should RESPOND to conversations relevant to their background
+- {{agentName}} should RESPOND to messages that are asking to create an agent and extract agent information like name, description, and wallet address as a JSON array by continuing the conversation.
 - {{agentName}} should IGNORE irrelevant messages
 - {{agentName}} should IGNORE very short messages unless directly addressed
 - {{agentName}} should STOP if asked to stop
@@ -351,6 +354,8 @@ export class TwitterInteractionClient {
             formattedConversation,
         });
 
+        this.runtime.evaluate(message);
+
         // check if the tweet exists, save if it doesn't
         const tweetId = stringToUuid(tweet.id + "-" + this.runtime.agentId);
         const tweetExists =
@@ -398,9 +403,9 @@ export class TwitterInteractionClient {
         const shouldRespondContext = composeContext({
             state,
             template:
-                this.runtime.character.templates?.twitterShouldRespondTemplate?.(
-                    validTargetUsersStr
-                ) ||
+                // this.runtime.character.templates?.twitterShouldRespondTemplate?.(
+                //     validTargetUsersStr
+                // ) ||
                 this.runtime.character?.templates?.shouldRespondTemplate ||
                 twitterShouldRespondTemplate(validTargetUsersStr),
         });
@@ -471,6 +476,7 @@ export class TwitterInteractionClient {
                     } else {
                         responseMessage.content.action = "CONTINUE";
                     }
+                    //await extractUserData(responseMessage.content.text, this.runtime, message);
                     await this.runtime.messageManager.createMemory(
                         responseMessage
                     );

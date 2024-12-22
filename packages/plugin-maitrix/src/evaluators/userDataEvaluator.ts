@@ -1,6 +1,5 @@
-import { composeContext } from "@ai16z/eliza";
-import { generateObjectArray } from "@ai16z/eliza";
-import { MemoryManager } from "@ai16z/eliza";
+import { composeContext, HandlerCallback, State } from "@ai16z/eliza";
+import { generateText } from "@ai16z/eliza";
 import {
     ActionExample,
     IAgentRuntime,
@@ -9,10 +8,9 @@ import {
     Evaluator,
 } from "@ai16z/eliza";
 import { getCacheKey, UserData } from '../types/types';
-import { sendUserDataToApi } from '../types/apiTypes';
 
 export const userDataTemplate =
-    `TASK: Extract user information from the conversation as a JSON array.
+    `TASK: Extract agent information like name, description, wallet address and the final confirmation from the user to go ahead and create the agent, as a JSON array from the most recent conversations. Discard values from previous conversations. Always return the most recent values only.
 
 # START OF EXAMPLES
 These are examples of the expected output of this task:
@@ -21,29 +19,36 @@ These are examples of the expected output of this task:
 
 # INSTRUCTIONS
 Extract specific information about the user from the conversation:
-- Extract only directly stated information about the user's name, location, and occupation
+- Extract only directly stated information about the user's name for the agent, description for the agent, and the user's wallet address
+- Extract the final confirmation from the user after getting all the information to go ahead and create the agent
 - Only include information stated by the user themselves
 - Skip any ambiguous or uncertain information
 - Ignore information about other people
-- Only extract current information (not past or future)
+- Each piece of information should be a separate object in the array
+- The 'field' property should be one of 'name', 'description', or 'walletAddress'
+- The 'value' property should contain the corresponding value as a string
+- If no information is found for a field, do not include an object for that field
+- The resulting array should be a valid JSON array, with objects separated by commas
+- Do not include any other text, formatting, or markup - ONLY the JSON array
+- The 'confirmed' field should be a boolean value, true if the user confirms the information, false if they do not
 
+IMPORTANT: Return ONLY the raw JSON array. Do not include any markdown formatting, backticks, or language identifiers.
 Recent Messages:
 {{recentMessages}}
 
-Response should be a JSON array in the following format:
-\`\`\`json
+Response should be ONLY a valid JSON array, like this but not exactly this:
 [
-    {"field": "name", "value": "stated name of user"},
-    {"field": "location", "value": "current city/country"},
-    {"field": "occupation", "value": "current job"}
-]
-\`\`\``;
+    {"field": "name", "value": "stated name for the agent"},
+    {"field": "description", "value": "stated description for the agent"},
+    {"field": "walletAddress", "value": "user's crypto wallet address"},
+    {"field": "confirmed", "value": "if the agent has been created, this should be true, otherwise false"}
+]`;
 
-async function handler(runtime: IAgentRuntime, message: Memory) {
+async function handler(runtime: IAgentRuntime,
+            message: Memory) {
+
     console.log("Handler started", { messageId: message.id, userId: message.userId });
     const state = await runtime.composeState(message);
-
-    console.log("Inside the handler");
 
     // Generate extraction context
     const context = composeContext({
@@ -51,31 +56,66 @@ async function handler(runtime: IAgentRuntime, message: Memory) {
         template: userDataTemplate,
     });
 
-    // Extract data from conversation
-    const extractedData = await generateObjectArray({
+    // Extract data from conversation as text
+    const extractedText = await generateText({
         runtime,
         context,
-        modelClass: ModelClass.LARGE,
-    }) as Array<{field: string, value: string}>;
+        modelClass: ModelClass.SMALL,
+    });
 
-    if (!extractedData) {
+    console.log("Extracted text");
+    console.log(extractedText);
+
+    // Parse the extracted text as JSON array
+    let extractedData: Array<{field: string, value: string}> = [];
+    try {
+        extractedData = JSON.parse(extractedText);
+    } catch (error) {
+        console.error("Error parsing JSON array:", error);
+        console.error("Extracted text:", extractedText);
         return;
     }
 
+    if (!extractedData || !Array.isArray(extractedData)) {
+        console.warn("Extracted data is not an array:", extractedText);
+        return;
+    }
+
+    // Filter out objects with missing or invalid field/value properties
+    extractedData = extractedData.filter(data =>
+        data.field && ['name', 'description', 'walletAddress'].includes(data.field) &&
+        data.value && typeof data.value === 'string'
+    );
+
+    console.log("Extracted data");
+    console.log(extractedData);
+
     // Get or initialize user data
     const cacheKey = getCacheKey(runtime.character.name, message.userId);
-    let userData = await runtime.cacheManager.get<UserData>(cacheKey) || {
+    // let userData = await runtime.cacheManager.get<UserData>(cacheKey) || {
+    //     name: undefined,
+    //     description: undefined,
+    //     walletAddress: undefined,
+    //     lastUpdated: Date.now(),
+    //     isComplete: false,
+    //     confirmed: false,
+    //     userId: message.userId
+    // };
+
+    let userData = await {
         name: undefined,
-        location: undefined,
-        occupation: undefined,
+        description: undefined,
+        walletAddress: undefined,
         lastUpdated: Date.now(),
-        isComplete: false
+        isComplete: false,
+        confirmed: false,
+        userId: message.userId
     };
 
     // Update with new data
     let updated = false;
     for (const data of extractedData) {
-        const field = data.field as keyof Omit<UserData, 'lastUpdated' | 'isComplete'>;
+        const field = data.field as keyof Omit<UserData, 'lastUpdated' | 'isComplete' | 'confirmed'>;
         if (!userData[field] && data.value?.trim()) {
             userData[field] = data.value.trim();
             updated = true;
@@ -83,33 +123,29 @@ async function handler(runtime: IAgentRuntime, message: Memory) {
     }
 
     if (updated) {
-        const wasComplete = userData.isComplete;
-        userData.isComplete = Boolean(userData.name && userData.location && userData.occupation);
+        userData.isComplete = Boolean(userData.name && userData.description && userData.walletAddress);
         userData.lastUpdated = Date.now();
 
         await runtime.cacheManager.set(cacheKey, userData);
-
-        if (userData.isComplete && !wasComplete) {
-            await sendUserDataToApi(runtime, message, userData);
-        }
+        // if (userData.isComplete) {
+        //     //runtime.actions["CREATE_AGENT"].handler(runtime, message, state, {}, () => {});
+        // }
     }
 }
 
 export const userDataEvaluator: Evaluator = {
-    name: "GET_USER_DATA",
-    similes: ["EXTRACT_USER_INFO", "GET_USER_INFO", "COLLECT_USER_DATA"],
+    alwaysRun: true,
+    name: "GET_AGENT_DATA",
+    similes: ["EXTRACT_AGENT_INFO", "GET_USER_INFO", "COLLECT_DATA", "COLLECT_USER_INFO_FROM_TWEET"],
     validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
+        console.log("Validate user data", { messageId: message.id, userId: message.userId });
         const cacheKey = getCacheKey(runtime.character.name, message.userId);
         const userData = await runtime.cacheManager.get<UserData>(cacheKey);
 
-        console.log("Inside the validate");
-        console.log(userData);
-        console.log(!userData || !userData.isComplete);
-
         if (!userData || !userData.isComplete) return true;
-        return false;
+        return true;
     },
-    description: "Extract user's name, current location, and occupation from natural conversation",
+    description: "Extract agent's name, description, and user's wallet address, and the final confirmation from the user to go ahead and create the agent",
     handler,
     examples: [
         {
@@ -117,67 +153,57 @@ export const userDataEvaluator: Evaluator = {
             messages: [
                 {
                     user: "{{user1}}",
-                    content: { text: "Hi everyone! I'm Alex Thompson" }
+                    content: { text: "Let's name the agent Alex" }
                 },
                 {
                     user: "{{user2}}",
-                    content: { text: "Welcome! Where are you located?" }
+                    content: { text: "The agent should be described as a helpful AI assistant focused on productivity" }
                 },
                 {
                     user: "{{user1}}",
-                    content: { text: "I live in Seattle, working as a software engineer" }
+                    content: { text: "My wallet address is 0x742d35Cc6634C0532925a3b844Bc454e4438f44e" }
+                },
+                {
+                    user: "{{user1}}",
+                    content: { text: "My wallet address is 4vBJuhW5fA9up6wG5F8tAPmNRAfERtKL8owGKmGAUPWg" }
+                },
+                {
+                    user: "{{user1}}",
+                    content: { text: "Let's go ahead" }
+                },
+                {
+                    user: "{{user1}}",
+                    content: { text: "yes" }
+                },
+                {
+                    user: "{{user1}}",
+                    content: { text: "this looks good" }
                 }
             ] as ActionExample[],
-            outcome: `\`\`\`json
-[
-    {"field": "name", "value": "Alex Thompson"},
-    {"field": "location", "value": "Seattle"},
-    {"field": "occupation", "value": "software engineer"}
-]
-\`\`\``
+            outcome: `[
+    {"field": "name", "value": "Alex"},
+    {"field": "description", "value": "a helpful AI assistant focused on productivity"},
+    {"field": "walletAddress", "value": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"},
+    {"field": "confirmed", "value": "true"}
+]`
         },
         {
             context: `Conversation with indirect or ambiguous information`,
             messages: [
                 {
                     user: "{{user1}}",
-                    content: { text: "My friend Mike lives in Boston" }
+                    content: { text: "Maybe we could call it Ava or something" }
                 },
                 {
                     user: "{{user2}}",
-                    content: { text: "Do you still teach?" }
-                },
-                {
-                    user: "{{user1}}",
-                    content: { text: "No, thinking about changing careers" }
-                }
-            ] as ActionExample[],
-            outcome: `\`\`\`json
-[]
-\`\`\``
-        },
-        {
-            context: `Mixed information with partial valid data`,
-            messages: [
-                {
-                    user: "{{user1}}",
-                    content: { text: "I used to live in NYC but moved to Austin last year" }
+                    content: { text: "An agent that helps with scheduling would be cool" }
                 },
                 {
                     user: "{{user2}}",
-                    content: { text: "What do you do there?" }
-                },
-                {
-                    user: "{{user1}}",
-                    content: { text: "I'm a graphic designer at a tech startup" }
+                    content: { text: "I'm not sure about this" }
                 }
             ] as ActionExample[],
-            outcome: `\`\`\`json
-[
-    {"field": "location", "value": "Austin"},
-    {"field": "occupation", "value": "graphic designer"}
-]
-\`\`\``
+            outcome: `[]`
         }
     ],
 };

@@ -1,4 +1,10 @@
 import path from 'path';
+import {
+    IAgentRuntime,
+    Memory,
+    generateText,
+    ModelClass
+} from "@ai16z/eliza";
 
 // Core interfaces
 export interface UserData {
@@ -136,4 +142,108 @@ Response must be a JSON array like this:
 // Helper function to get cache key
 export function getCacheKey(agentName: string, userId: string): string {
     return path.join(BASE_CACHE_KEY, agentName, userId);
+}
+
+
+export async function extractUserData(text: string, runtime: IAgentRuntime, message: Memory): Promise<void> {
+
+    const contextExtract = `
+    Extract agent information like name, description / purpose / intent, and wallet address of the agents as a JSON array from ${text}.
+
+    # START OF EXAMPLES
+    These are examples of the expected output of this task:
+    {{evaluationExamples}}
+    # END OF EXAMPLES
+
+    # INSTRUCTIONS
+    Extract specific information about the user from the conversation:
+    - Extract only directly stated information about the user's name for the agent, description for the agent, and the user's wallet address
+    - Only include information stated by the user themselves
+    - Skip any ambiguous or uncertain information
+    - Ignore information about other people
+    - Each piece of information should be a separate object in the array
+    - The 'field' property should be one of 'name', 'description', or 'walletAddress'
+    - The 'value' property should contain the corresponding value as a string
+    - If no information is found for a field, do not include an object for that field
+    - The resulting array should be a valid JSON array, with objects separated by commas
+    - Do not include any other text, formatting, or markup - ONLY the JSON array
+
+    IMPORTANT: Return ONLY the raw JSON array. Do not include any markdown formatting, backticks, or language identifiers.
+    Recent Messages:
+    {{recentMessages}}
+
+    Response should be ONLY a valid JSON array, like this but not exactly this:
+    [
+        {"field": "name", "value": "stated name for the agent"},
+        {"field": "description", "value": "stated description or purpose for the agent"},
+        {"field": "walletAddress", "value": "user's crypto wallet address"}
+    ]
+    `
+
+    const responseExtract = await generateText({
+        runtime,
+        context:contextExtract,
+        modelClass: ModelClass.SMALL,
+        stop: ["\n"],
+    });
+
+    console.log("responseExtract from Twitter interaction.js: ");
+    console.log(responseExtract);
+
+    // Parse the extracted text as JSON array
+    let extractedData: Array<{field: string, value: string}> = [];
+    try {
+        extractedData = JSON.parse(responseExtract);
+    } catch (error) {
+        console.error("Error parsing JSON array:", error);
+        console.error("Extracted text:", responseExtract);
+        return;
+    }
+
+    if (!extractedData || !Array.isArray(extractedData)) {
+        console.warn("Extracted data is not an array:", responseExtract);
+        return;
+    }
+
+    // Filter out objects with missing or invalid field/value properties
+    extractedData = extractedData.filter(data =>
+        data.field && ['name', 'description', 'walletAddress'].includes(data.field) &&
+        data.value && typeof data.value === 'string'
+    );
+
+    console.log("Extracted data");
+    console.log(extractedData);
+
+    // Get or initialize user data
+    const cacheKey = getCacheKey(runtime.character.name, message.userId);
+    let userData = await runtime.cacheManager.get<UserData>(cacheKey) || {
+        name: undefined,
+        description: undefined,
+        walletAddress: undefined,
+        lastUpdated: Date.now(),
+        isComplete: false,
+        confirmed: false,
+        userId: message.userId
+    };
+
+    // Update with new data
+    let updated = false;
+    for (const data of extractedData) {
+        const field = data.field as keyof Omit<UserData, 'lastUpdated' | 'isComplete' | 'confirmed'>;
+        if (!userData[field] && data.value?.trim()) {
+            userData[field] = data.value.trim();
+            updated = true;
+        }
+    }
+
+    if (updated) {
+        userData.isComplete = Boolean(userData.name && userData.description && userData.walletAddress);
+        userData.lastUpdated = Date.now();
+
+        await runtime.cacheManager.set(cacheKey, userData);
+    }
+
+    console.log("User data updated");
+    console.log(userData);
+
 }
