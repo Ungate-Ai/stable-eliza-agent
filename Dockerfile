@@ -15,4 +15,4 @@ COPY scripts ./scripts
 COPY characters ./characters
 RUN pnpm install
 RUN pnpm build-docker
-CMD ["pnpm", "start", "--non-interactive"]
+CMD ["pnpm", "start", "--non-interactive"] 
