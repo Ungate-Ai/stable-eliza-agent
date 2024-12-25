@@ -18,7 +18,10 @@ import {
 } from "@ai16z/eliza";
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
+
+//Nav custom code starts
 import { UserData, extractUserData, getCacheKey } from "./types.ts";
+//Nav custom code ends
 
 export const twitterMessageHandlerTemplate =
     `
@@ -354,17 +357,40 @@ export class TwitterInteractionClient {
             formattedConversation,
         });
 
+        //Nav custom codes starts
         this.runtime.evaluate(message);
+        console.log("tweet.userId: ");
+        console.log(tweet.username);
+
+        const cacheKey = getCacheKey(this.runtime.character.name, "twitterId");
+        await this.runtime.cacheManager.set(cacheKey, tweet.username);
+
+        // let userData = await this.runtime.cacheManager.get<UserData>(cacheKey) || {
+        //     name: undefined,
+        //     description: undefined,
+        //     walletAddress: undefined,
+        //     lastUpdated: Date.now(),
+        //     isComplete: false,
+        //     confirmed: false,
+        //     userId: message.userId,
+        //     twitterId: undefined
+        // };
+        // userData["twitterId"] = tweet.username;
+        // await this.runtime.cacheManager.set<UserData>(cacheKey, userData);
+
 
         // check if the tweet exists, save if it doesn't
         const tweetId = stringToUuid(tweet.id + "-" + this.runtime.agentId);
         const tweetExists =
             await this.runtime.messageManager.getMemoryById(tweetId);
 
+
+
         if (!tweetExists) {
             elizaLogger.log("tweet does not exist, saving");
             const userIdUUID = stringToUuid(tweet.userId as string);
             const roomId = stringToUuid(tweet.conversationId);
+
 
             const message = {
                 id: tweetId,

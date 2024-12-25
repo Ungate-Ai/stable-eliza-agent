@@ -57,7 +57,8 @@ export const clearAgentDataAction: Action = {
             lastUpdated: Date.now(),
             isComplete: false,
             confirmed: false,
-            userId: message.userId
+            userId: message.userId,
+            twitterId: undefined
         };
         await runtime.cacheManager.set(cacheKey, userData);
 

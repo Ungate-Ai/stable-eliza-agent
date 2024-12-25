@@ -138,6 +138,9 @@ importers:
       '@ai16z/plugin-0g':
         specifier: workspace:*
         version: link:../packages/plugin-0g
+      '@ai16z/plugin-agentise':
+        specifier: workspace:*
+        version: link:../packages/plugin-agentise
       '@ai16z/plugin-aptos':
         specifier: workspace:*
         version: link:../packages/plugin-aptos
@@ -928,6 +931,21 @@ importers:
         specifier: 8.3.5
         version: 8.3.5(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(typescript@5.6.3)(yaml@2.6.1)
 
+  packages/plugin-agentise:
+    dependencies:
+      '@ai16z/client-twitter':
+        specifier: workspace:*
+        version: link:../client-twitter
+      '@ai16z/eliza':
+        specifier: workspace:*
+        version: link:../core
+      tsup:
+        specifier: 8.3.5
+        version: 8.3.5(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(typescript@5.6.3)(yaml@2.6.1)
+      whatwg-url:
+        specifier: 7.1.0
+        version: 7.1.0
+
   packages/plugin-aptos:
     dependencies:
       '@ai16z/eliza':
@@ -1194,6 +1212,9 @@ importers:
 
   packages/plugin-maitrix:
     dependencies:
+      '@ai16z/client-twitter':
+        specifier: workspace:*
+        version: link:../client-twitter
       '@ai16z/eliza':
         specifier: workspace:*
         version: link:../core
@@ -32272,7 +32293,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.4
+      debug: 4.4.0(supports-color@8.1.1)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:

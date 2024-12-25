@@ -644,6 +644,7 @@ export async function generateShouldRespond({
                 modelClass,
             });
 
+
             elizaLogger.debug("Received response from generateText:", response);
             const parsedResponse = parseShouldRespondFromText(response.trim());
             if (parsedResponse) {

@@ -46,7 +46,7 @@ export const createAgentAction: Action = {
             return true;
         }
 
-        return false;
+        return true;
     },
     handler: async (
         runtime: IAgentRuntime,
@@ -58,74 +58,35 @@ export const createAgentAction: Action = {
 
         console.log("Create Agent Action Handler called");
         const cacheKey = getCacheKey(runtime.character.name, message.userId);
+        const cacheKeyTwitterId = getCacheKey(runtime.character.name, "twitterId");
         let userData = await runtime.cacheManager.get<UserData>(cacheKey);
-        let twitterId = await runtime.cacheManager.get<string>(cacheKey);
+        let twitterId = await runtime.cacheManager.get<string>(cacheKeyTwitterId);
         let isRedPill = await runtime.cacheManager.get<boolean>(cacheKey);
 
         console.log("twitterId: ");
         console.log(twitterId);
-        console.log("isRedPill: ");
-        console.log(isRedPill);
+        console.log("Wallet Address: ");
+        console.log( userData["walletAddress"]);
 
-        const response = await createAgentFromTwitter(runtime, twitterId, userData["walletAddress"]);
-        console.log("Sending user data to API");
-        console.log(response);
+        if (userData.isComplete ) {
+            const response = await createAgentFromTwitter(runtime, twitterId, userData["walletAddress"]);
+            console.log("Sending user data to API");
+            console.log(response);
 
-        if (response.success) {
-            callback({
-                text: `Your agent has been created successfully. You can view and manage your agent at this link: ${response.agentUrl}\n. Please log in with the wallet address you provided to connect your twitter account and make changes to your agent.`
-            });
-        } else {
-            elizaLogger.error('Failed to create agent:', response.error);
-            callback({
-                text: "You've been added to the waitlist. We'll notify you when your agent is ready."
-            });
-        }
-
-        if (userData.isComplete && !userData.confirmed) {
-            //if (message.content.text.toLowerCase().includes('yes')) {
-                userData.confirmed = true;
-                await runtime.cacheManager.set(cacheKey, userData);
-
-                // const shouldCreateAgentContext = composeContext({
-                //     state,
-                //     template: shouldCreateAgentTemplate, // Define this template separately
+            if (response.success) {
+                callback({
+                    text: `Your agent has been created successfully. You can view and manage your agent at this link: ${response.agentUrl}\n. Please log in with the wallet address you provided to connect your twitter account and make changes to your agent.`
+                });
+            } else {
+                elizaLogger.error('Failed to create agent:', response.error);
+                callback({
+                    text: "You've been added to the waitlist. We'll notify you when your agent is ready."
+                });
+                // const hardcodedAgentUrl = "https://mematrix.fun/agent/view/57566258-ab03-0497-b221-77bca0104c50";
+                // callback({
+                //     text: `Your agent has been created successfully. You can view and manage your agent at this link: ${hardcodedAgentUrl}\n. Please log in with the wallet address you provided to connect your twitter account and make changes to your agent.`
                 // });
-
-                const response = await sendUserDataToApi(runtime, message, userData);
-                console.log("Sending user data to API");
-                console.log(response);
-
-                // const response = await sendUserDataToApi(runtime, message, userData);
-                userData = {
-                    name: undefined,
-                    description: undefined,
-                    walletAddress: undefined,
-                    lastUpdated: Date.now(),
-                    isComplete: false,
-                    confirmed: false,
-                    userId: message.userId,
-                    twitterId: undefined
-                };
-                await runtime.cacheManager.set(cacheKey, userData);
-
-
-                if (response.success) {
-                    callback({
-                        text: `Your agent has been created successfully. You can view and manage your agent at this link: ${response.agentUrl}\n. Please log in with the wallet address you provided to make changes to your agent.`
-                    });
-                } else {
-                    elizaLogger.error('Failed to create agent:', response.error);
-                    callback({
-                        text: "Sorry, there was an error creating your agent. Please try again later."
-                    });
-                }
-            // } else {
-            //     callback({
-            //         text: "No worries, let me know if you'd like to create your agent in the future."
-            //     });
-            // }
-
+            }
             return true;
         }
 

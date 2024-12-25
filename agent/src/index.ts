@@ -54,6 +54,7 @@ import { tonPlugin } from "@ai16z/plugin-ton";
 import { zksyncEraPlugin } from "@ai16z/plugin-zksync-era";
 import { cortexPlugin } from "@ai16z/plugin-cortex";
 import { maitrixPlugin } from "@ai16z/plugin-maitrix";
+import { agentisePlugin } from "@ai16z/plugin-agentise";
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
@@ -484,7 +485,7 @@ export async function createAgent(
         plugins: [
             bootstrapPlugin,
             nodePlugin,
-            maitrixPlugin,
+            agentisePlugin,
             getSecret(character, "CONFLUX_CORE_PRIVATE_KEY")
                 ? confluxPlugin
                 : null,

@@ -27,46 +27,6 @@ export const BASE_CACHE_KEY = 'userdata';
 // Field-specific guidance
 export const FIELD_GUIDANCE: FieldGuidance[] = [
     {
-        field: 'name',
-        description: "The desired name for the agent",
-        validExamples: [
-            "Let's call the agent Alex",
-            "Name the agent Ava",
-            "The agent's name should be John"
-        ],
-        invalidExamples: [
-            "My friend Mike suggested the name",
-            "I had an agent named Jay before",
-            "Agents often have names like Alexa or Siri"
-        ],
-        extractionHints: [
-            "Must be a direct statement about the agent's name",
-            "Should be in present or future tense",
-            "Must not be a reference to other agents or people",
-            "Should be a definite, decided name"
-        ]
-    },
-    {
-        field: 'description',
-        description: "A brief description of the agent's purpose or capabilities",
-        validExamples: [
-            "The agent should help with scheduling and productivity",
-            "It's an AI assistant for managing my tasks",
-            "The agent will be focused on providing helpful information and answers"
-        ],
-        invalidExamples: [
-            "I had an agent before that was good at math",
-            "Most AI assistants can answer questions",
-            "It would be cool if it could also play games"
-        ],
-        extractionHints: [
-            "Must be a direct statement about this agent's description",
-            "Should describe intended purpose or capabilities",
-            "Must not be a reference to other agents or hypotheticals",
-            "Should be specific to this agent"
-        ]
-    },
-    {
         field: 'walletAddress',
         description: "The user's cryptocurrency wallet address",
         validExamples: [
@@ -113,8 +73,6 @@ These are examples of the expected output of this task:
 
 # INSTRUCTIONS
 Extract the following information about the user if directly stated:
-- Name: The desired name for the agent
-- Description: A brief description of the agent's purpose or capabilities
 - Wallet Address: The user's cryptocurrency wallet address
 
 Extract ONLY information that is:
@@ -128,8 +86,6 @@ Recent Messages:
 Response must be a JSON array like this:
 \`\`\`json
 [
-    {"field": "name", "value": "exact stated agent name"},
-    {"field": "description", "value": "stated agent description"},
     {"field": "walletAddress", "value": "user's provided wallet address"}
 ]
 \`\`\``;

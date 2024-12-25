@@ -55,7 +55,7 @@ export async function sendUserDataToApi(
 
         const requestData = await constructApiRequest(runtime, message, userData);
         elizaLogger.debug('API request payload:', requestData);
-        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNpbTIifQ.eyJzdWIiOiI4OWZlOTFkMy03ODNkLTBhMzYtOWQ4MC04MmJmNjMzZjMxNzIiLCJpYXQiOjE3MzQ2ODYyMDgsImV4cCI6MTczNDc3MjYwOH0.3Xk883hsdCbWYJLTbVzH5IdLGJcVQ5IvkaoNKj0f6UI";
+        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNpbTIifQ.eyJzdWIiOiI1NzU2NjI1OC1hYjAzLTA0OTctYjIyMS03N2JjYTAxMDRjNTAiLCJpYXQiOjE3MzUwMTMzODcsImV4cCI6MTczNTA5OTc4N30.YvnQ7TUX6okxTQ3kCaeAKqV2RpxCQ59ojkDKK92h3KY";
         const body = {
             "agentName": userData.name,
             "agentDescription": userData.description,
@@ -119,7 +119,7 @@ export async function createAgentFromTwitter(
         console.log(twitterId);
         console.log("Wallet Address: ");
         console.log(walletAddress);
-        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNpbTIifQ.eyJzdWIiOiI4OWZlOTFkMy03ODNkLTBhMzYtOWQ4MC04MmJmNjMzZjMxNzIiLCJpYXQiOjE3MzQ2ODYyMDgsImV4cCI6MTczNDc3MjYwOH0.3Xk883hsdCbWYJLTbVzH5IdLGJcVQ5IvkaoNKj0f6UI";
+        const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNpbTIifQ.eyJzdWIiOiI1NzU2NjI1OC1hYjAzLTA0OTctYjIyMS03N2JjYTAxMDRjNTAiLCJpYXQiOjE3MzUwMTMzODcsImV4cCI6MTczNTA5OTc4N30.YvnQ7TUX6okxTQ3kCaeAKqV2RpxCQ59ojkDKK92h3KY";
 
         const response = await fetch('https://mematrix.fun/api/mematrix/agents/create/by-agent', {
             method: 'POST',
@@ -128,8 +128,8 @@ export async function createAgentFromTwitter(
                 'Authorization': 'Bearer ' + apiKey,
             },
             body: JSON.stringify({
-                "twitterUsername": "0xnavkumar",
-                "walletAddress": "DpkCEP4XizyX163vpQ3neowugLWDz2mkyZ5uhSZiKtTH",
+                "twitterUsername": twitterId,
+                "walletAddress": walletAddress,
                 "walletChain": "solana",
                 "type": "twitter"
             })

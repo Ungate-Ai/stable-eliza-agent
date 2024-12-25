@@ -15,6 +15,7 @@ export interface UserData {
     isComplete: boolean;
     confirmed: boolean;
     userId: string;
+    twitterId: string;
 }
 
 export interface FieldGuidance {
@@ -223,7 +224,8 @@ export async function extractUserData(text: string, runtime: IAgentRuntime, mess
         lastUpdated: Date.now(),
         isComplete: false,
         confirmed: false,
-        userId: message.userId
+        userId: message.userId,
+        twitterId: undefined
     };
 
     // Update with new data
