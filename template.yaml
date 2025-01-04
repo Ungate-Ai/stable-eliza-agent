@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko-build
+  namespace: jenkins
+  labels:
+    build: kaniko
+spec:
+  serviceAccountName: jenkins
+  containers:
+    - name: kubectl
+      image: joshendriks/alpine-k8s
+      command:
+      - /bin/cat
+      tty: true
+      volumeMounts:
+        - mountPath: /k8.yaml
+          subPath: k8.yaml
+          name: kubeconfig
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      imagePullPolicy: Always
+      command:
+      - /busybox/sh
+      args:
+      - -c
+      - |
+        while true; do sleep 30; done
+      volumeMounts:
+        - name: docker-secret
+          mountPath: /kaniko/.docker
+        - mountPath: /kaniko/k8.yaml
+          subPath: k8.yaml
+          name: kubeconfig
+      resources:
+        requests:
+          memory: "1.5Gi"
+          cpu: "1"
+        limits:
+          memory: "2.5Gi"
+          cpu: "2"
+  volumes:
+    - name: docker-secret
+      secret:
+        secretName: docker-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: kubeconfig
+      configMap:
+        name: kubeconfig
+    - name: secrets
+      configMap:
+        name: secrets
+  imagePullSecrets:
+    - name: docker-secret

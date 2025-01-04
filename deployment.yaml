@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: architect-container
-          image: registry.digitalocean.com/ungate/architect-ungate:development
+          image: registry.digitalocean.com/ungate/mematrix-architect:development
           ports:
             - containerPort: 3000
           resources:
@@ -24,9 +24,21 @@ spec:
             requests:
               memory: "768Mi"
               cpu: "500m"
+          volumeMounts:
+            - name: character-config
+              mountPath: /app/characters/architect.json
+              subPath: architect.json
+            - name: character-config
+              mountPath: /app/.env
+              subPath: .env
+          args: ["pnpm","start", "--characters=/app/characters/architect.json", ""]
           imagePullPolicy: Always
       imagePullSecrets:
         - name: docker-secret
+      volumes:
+        - name: character-config
+          configMap:
+            name: architect
   strategy:
     type: RollingUpdate
     rollingUpdate:
