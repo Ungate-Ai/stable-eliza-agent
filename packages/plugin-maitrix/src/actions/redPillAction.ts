@@ -17,14 +17,14 @@ const TRIGGER_PHRASES = [
     'agentise me',
     'agentize me',
     'create an ai agent from my twitter profile',
-    'give me the red pill',
-    'take the red pill'
+    'give me the blue pill',
+    'take the blue pill'
 ];
 
 export const redPillAction: Action = {
     name: "TAKE_RED_PILL",
     similes: ["CREATE_TWITTER_AGENT", "AGENTIZE", "AGENTISE", "RED_PILL"],
-    description: "Create an agent from user's Twitter profile only when the user says 'agentise me', 'agentize me', 'give me the red pill' or 'take the red pill' or a variation. When this action is triggered, do not send any other messages than the ones in the callback",
+    description: "Create an agent from user's Twitter profile only when the user says 'agentise me', 'agentize me', 'give me the blue pill' or 'take the blue pill' or a variation. When this action is triggered, do not send any other messages than the ones in the callback",
 
     validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
         const messageText = message.content.text.toLowerCase();

@@ -1,4 +1,4 @@
-import { booleanFooter, elizaLogger } from "@ai16z/eliza";
+import { elizaLogger } from "@ai16z/eliza";
 import {
     Action,
     ActionExample,
@@ -12,7 +12,7 @@ import {
     UserData,
     getCacheKey
 } from '../types/types';
-import { constructApiRequest, sendUserDataToApi, createAgentFromTwitter } from '../types/apiTypes';
+import { createAgentFromTwitter } from '../types/apiTypes';
 
 // export const shouldCreateAgentTemplate =
 //     `Based on the conversation so far and if it is not part of the red pill action:

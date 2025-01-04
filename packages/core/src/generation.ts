@@ -562,6 +562,8 @@ export async function generateText({
             }
         }
 
+        console.log("RESPONSE", response);
+
         return response;
     } catch (error) {
         elizaLogger.error("Error in generateText:", error);

@@ -10,7 +10,7 @@ import {
 import { getCacheKey, UserData } from '../types/types';
 
 export const userDataTemplate =
-    `TASK:  If the user says agentise me, agentize me, give me the red pill or a variation, then extract agent information like wallet address from the user to go ahead and  agentise them, as a JSON array from the most recent conversations. Discard values from previous conversations. Always return the most recent values only.
+    `TASK:  If the user says agentise me, agentize me, give me the blue pill or a variation, then extract user information like wallet address from the user to go ahead and agentise them, as a JSON array.
 
 # START OF EXAMPLES
 These are examples of the expected output of this task:
@@ -19,8 +19,8 @@ These are examples of the expected output of this task:
 
 # INSTRUCTIONS
 Extract specific information about the user from the conversation:
+- When asking for this information, be to the point and ask for the information directly. Do not add any fluff or context. Keep it short and concise.
 - Extract only directly stated information about the user's wallet address
-- Extract the final confirmation from the user after getting all the information to go ahead and create the agent
 - Only include information stated by the user themselves
 - Skip any ambiguous or uncertain information
 - Ignore information about other people
@@ -30,6 +30,7 @@ Extract specific information about the user from the conversation:
 - If no information is found for a field, do not include an object for that field
 - The resulting array should be a valid JSON array, with objects separated by commas
 - Do not include any other text, formatting, or markup - ONLY the JSON array
+- Only ask for this information once. Do not continue the conversation until the user has provided the information
 
 IMPORTANT: Return ONLY the raw JSON array. Do not include any markdown formatting, backticks, or language identifiers.
 Recent Messages:
@@ -37,7 +38,7 @@ Recent Messages:
 
 Response should be ONLY a valid JSON array, like this but not exactly this:
 [
-    {"field": "walletAddress", "value": "user's crypto wallet address"},
+    {"field": "walletAddress", "value": "user's crypto wallet address like 0x742d35Cc6634C0532925a3b844Bc454e4438f44e or 4vBJuhW5fA9up6wG5F8tAPmNRAfERtKL8owGKmGAUPWg"},
 ]`;
 
 async function handler(runtime: IAgentRuntime,
@@ -139,10 +140,13 @@ export const userDataEvaluator: Evaluator = {
         const cacheKey = getCacheKey(runtime.character.name, message.userId);
         const userData = await runtime.cacheManager.get<UserData>(cacheKey);
 
-        if (!userData || !userData.isComplete) return true;
+        //if (!userData || !userData.isComplete) return true;
+        if(message.content.text.includes("agentise me") || message.content.text.includes("agentize me") || message.content.text.includes("give me the blue pill") || message.content.text.includes("take the blue pill")) {
+            return true;
+        }
         return true;
     },
-    description: "Extract agent's name, description, and user's wallet address, and the final confirmation from the user to go ahead and create the agent",
+    description: "Extract user's wallet address and then create the agent",
     handler,
     examples: [
         {

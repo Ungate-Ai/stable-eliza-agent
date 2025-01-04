@@ -19,7 +19,7 @@ These are examples of the expected output of this task:
 
 # INSTRUCTIONS
 Extract specific information about the user from the conversation:
-- If user says 'agentise me', 'agentize me', 'give me the red pill' or a variation, do not continue with the task
+- If user says 'agentise me', 'agentize me', 'give me the blue pill' or a variation, do not continue with the task
 - Extract only directly stated information about the user's name for the agent, description for the agent, and the user's wallet address
 - Extract the final confirmation from the user after getting all the information to go ahead and create the agent
 - Only include information stated by the user themselves

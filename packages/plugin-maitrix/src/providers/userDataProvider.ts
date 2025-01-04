@@ -96,7 +96,7 @@ export const userDataProvider: Provider = {
             // Add collection strategy
             response += `\n\nCollection Strategy:
                 - Only ask for the information if the user has said they want to create an agent. In this case, Aggressively ask for the information
-                - Do not ask for the information if the user says 'agentise me', 'agentize me', 'I'll take the red pill' or a variation of this (this is a trigger phrase for the red pill action)
+                - Do not ask for the information if the user says 'agentise me', 'agentize me', 'I'll take the blue pill' or a variation of this (this is a trigger phrase for the red pill action)
                 - Engage in natural conversation on the platform you are using
                 - Only accept clear, explicit statements
                 - Avoid making assumptions

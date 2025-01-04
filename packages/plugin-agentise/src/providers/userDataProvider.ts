@@ -95,7 +95,7 @@ export const userDataProvider: Provider = {
 
             // Add collection strategy
             response += `\n\nCollection Strategy:
-                - Only ask for the information if the user has said says 'agentise me', 'agentize me', 'I'll take the red pill'. In this case, Aggressively ask for the information
+                - Only ask for the information if the user has said says 'agentise me', 'agentize me', 'I'll take the blue pill'. In this case, Aggressively ask for the information
                 - Engage in natural conversation on the platform you are using
                 - Only accept clear, explicit statements
                 - Avoid making assumptions

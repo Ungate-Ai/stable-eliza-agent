@@ -21,6 +21,7 @@ import { buildConversationThread, sendTweet, wait } from "./utils.ts";
 
 //Nav custom code starts
 import { UserData, extractUserData, getCacheKey } from "./types.ts";
+import { generateTemplate } from "./generateTemplate.ts";
 //Nav custom code ends
 
 export const twitterMessageHandlerTemplate =
@@ -317,6 +318,7 @@ export class TwitterInteractionClient {
         if (tweet.userId === this.client.profile.id) {
             // console.log("skipping tweet from bot itself", tweet.id);
             // Skip processing if the tweet is from the bot itself
+            elizaLogger.log("Skipping Tweet from bot itself", tweet.id);
             return;
         }
 
@@ -448,13 +450,22 @@ export class TwitterInteractionClient {
             return { text: "Response Decision:", action: shouldRespond };
         }
 
+        // const context = composeContext({
+        //     state,
+        //     template:
+        //         this.runtime.character.templates
+        //             ?.twitterMessageHandlerTemplate ||
+        //         this.runtime.character?.templates?.messageHandlerTemplate ||
+        //         twitterMessageHandlerTemplate,
+        // });
+
         const context = composeContext({
             state,
             template:
-                this.runtime.character.templates
-                    ?.twitterMessageHandlerTemplate ||
-                this.runtime.character?.templates?.messageHandlerTemplate ||
-                twitterMessageHandlerTemplate,
+            this.runtime.character.templates
+                        ?.twitterMessageHandlerTemplate ||
+                    this.runtime.character?.templates?.messageHandlerTemplate ||
+                    twitterMessageHandlerTemplate,
         });
 
         elizaLogger.debug("Interactions prompt:\n" + context);

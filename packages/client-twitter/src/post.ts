@@ -15,6 +15,7 @@ import { generateTweetActions } from "@ai16z/eliza";
 import { IImageDescriptionService, ServiceType } from "@ai16z/eliza";
 import { buildConversationThread } from "./utils.ts";
 import { twitterMessageHandlerTemplate } from "./interactions.ts";
+import { generateTemplate } from "./generateTemplate.ts";
 
 const twitterPostTemplate = `
 # Areas of Expertise
@@ -225,12 +226,21 @@ export class TwitterPostClient {
                 }
             );
 
+            // const context = composeContext({
+            //     state,
+            //     template:
+            //         this.runtime.character.templates?.twitterPostTemplate ||
+            //         twitterPostTemplate,
+            // });
+
+            //Nav Custom Codes starts
             const context = composeContext({
                 state,
                 template:
                     this.runtime.character.templates?.twitterPostTemplate ||
-                    twitterPostTemplate,
+                    generateTemplate(),
             });
+            //Nav Custom Codes ends
 
             elizaLogger.debug("generate post prompt:\n" + context);
 
@@ -368,10 +378,17 @@ export class TwitterPostClient {
         template?: string;
         context?: string;
     }): Promise<string> {
+        // const context = composeContext({
+        //     state: tweetState,
+        //     template: options?.template || this.runtime.character.templates?.twitterPostTemplate || twitterPostTemplate,
+        // });
+
+        //Nav Custom Codes starts
         const context = composeContext({
             state: tweetState,
-            template: options?.template || this.runtime.character.templates?.twitterPostTemplate || twitterPostTemplate,
+            template: generateTemplate(),
         });
+        //Nav Custom Codes starts
 
         const response = await generateText({
             runtime: this.runtime,
@@ -474,9 +491,14 @@ export class TwitterPostClient {
                         }
                     );
 
+                    // const actionContext = composeContext({
+                    //     state: tweetState,
+                    //     template: this.runtime.character.templates?.twitterActionTemplate || twitterActionTemplate,
+                    // });
+
                     const actionContext = composeContext({
                         state: tweetState,
-                        template: this.runtime.character.templates?.twitterActionTemplate || twitterActionTemplate,
+                        template: twitterActionTemplate,
                     });
 
                     const actionResponse = await generateTweetActions({
