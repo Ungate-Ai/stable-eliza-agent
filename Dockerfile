@@ -8,11 +8,22 @@ RUN npm install -g pnpm@9.4.0 && \
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
 COPY agent ./agent
-COPY packages ./packages
+COPY .env /app/.env
+
+COPY packages/adapter-sqlite ./packages/adapter-sqlite
+COPY packages/client-auto ./packages/client-auto
+COPY packages/client-discord ./packages/client-discord
+COPY packages/client-telegram ./packages/client-telegram
+COPY packages/client-twitter ./packages/client-twitter
+COPY packages/core ./packages/core
+COPY packages/client-direct ./packages/client-direct
+COPY packages/plugin-node ./packages/plugin-node
+
 COPY scripts ./scripts
 COPY characters ./characters
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
 RUN pnpm install
-RUN pnpm run build
-CMD ["pnpm", "start", "--non-interactive"]
+RUN pnpm run build-docker
+CMD ["pnpm", "start", "--characters=/app/characters/trump.character.json"]

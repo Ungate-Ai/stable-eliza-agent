@@ -2,7 +2,7 @@
     "name": "eliza",
     "scripts": {
         "preinstall": "npx only-allow pnpm",
-        "build": "turbo run build",
+        "build": "turbo run build --filter '!eliza-docs'",
         "build-docker": "turbo run build",
         "start": "pnpm --filter \"@ai16z/agent\" start --isRoot",
         "start:client": "pnpm --dir client dev",
@@ -55,7 +55,6 @@
         "@0glabs/0g-ts-sdk": "0.2.1",
         "@coinbase/coinbase-sdk": "0.10.0",
         "@deepgram/sdk": "^3.9.0",
-        "@vitest/eslint-plugin": "1.0.1",
         "@vitest/eslint-plugin": "1.0.1",
         "amqplib": "0.10.5",
         "csv-parse": "5.6.0",
