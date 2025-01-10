@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import fetch from "node-fetch"
 import {
     AgentRuntime,
     elizaLogger,
@@ -85,6 +85,47 @@ export function createApiRouter(agents: Map<string, AgentRuntime>, directClient)
         });
     });
 
+    router.post("/agents/load-agent", async (req, res) => {
+        try {
+            if (!process.env.AGENT_PORT || !process.env.AGENT_RUNTIME_MANAGEMENT || process.env.AGENT_RUNTIME_MANAGEMENT === "false") {
+                res.status(500).json({ message: "Agent Runtime not initialized for loading" });
+                return;
+            }
+
+            const response = await fetch(`http://localhost:${process.env.AGENT_PORT}/load-agent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(req.body),
+            });
+
+            const data = await response.json();
+            res.status(response.status).json(data);
+        } catch (error) {
+            res.status(500).json({ message: "Error starting agent", error: error.message || error.toString() });
+        }
+    });
+
+    router.post("/agents/unload-agent", async (req, res) => {
+        try {
+            const {agentId } = req.query
+            if(!agentId){
+                res.status(500).json({ message: "Invalid Agent Id" });
+                return;
+            }
+            let agent:AgentRuntime = agents.get(`${agentId}`);
+            if (agent) {
+                agent.stop()
+                directClient.unregisterAgent(agent)
+                res.status(200).json({ message: "Agent Stopped Successfully" });
+
+            }else{
+                res.status(400).json({ message: "Error starting agent! Agent Not Found" });
+            }
+
+        } catch (error) {
+            res.status(500).json({ message: "Error stopping agent", error: error.message || error.toString() });
+        }
+    });
 
     router.get("/agents/:agentId/channels", async (req, res) => {
         const agentId = req.params.agentId;

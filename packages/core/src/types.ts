@@ -781,6 +781,26 @@ export type Character = {
 };
 
 /**
+ * Represents a character in db
+ * Stored Character as JSONB as the characterState is more efficient for jsonb/nosql
+ * Other approach is to store each field as a table like character_settings,
+ * character_knowledge, character_plugins, etc.
+ */
+export type CharacterTable = {
+    id: UUID;
+    name: string;
+    characterState: Character;
+    secretsIV?: Secrets;
+};
+
+/**
+ * Configuration for an agent secrets
+ */
+export type Secrets = {
+    [key: string]: string;
+};
+
+/**
  * Interface for database operations
  */
 export interface IDatabaseAdapter {

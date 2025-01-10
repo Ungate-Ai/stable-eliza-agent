@@ -26,4 +26,3 @@ COPY characters ./characters
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
 RUN pnpm install
 RUN pnpm run build-docker
-CMD ["pnpm", "start", "--characters=/app/characters/trump.character.json"]
