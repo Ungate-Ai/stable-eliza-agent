@@ -9,7 +9,6 @@ RUN npm install -g pnpm@9.4.0 && \
 RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /app
 COPY agent ./agent
-COPY .env /app/.env
 
 COPY packages/adapter-sqlite ./packages/adapter-sqlite
 COPY packages/client-auto ./packages/client-auto
