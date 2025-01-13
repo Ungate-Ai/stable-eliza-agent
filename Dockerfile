@@ -10,10 +10,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /app
 COPY agent ./agent
 
-COPY packages/adapter-sqlite ./packages/adapter-sqlite
-COPY packages/client-auto ./packages/client-auto
-COPY packages/client-discord ./packages/client-discord
-COPY packages/client-telegram ./packages/client-telegram
+COPY packages/adapter-postgres ./packages/adapter-postgres
 COPY packages/client-twitter ./packages/client-twitter
 COPY packages/core ./packages/core
 COPY packages/client-direct ./packages/client-direct
@@ -25,3 +22,4 @@ COPY characters ./characters
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
 RUN pnpm install
 RUN pnpm run build-docker
+

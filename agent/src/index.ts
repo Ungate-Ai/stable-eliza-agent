@@ -1,11 +1,11 @@
-// import { PostgresDatabaseAdapter } from "@ai16z/adapter-postgres";
-import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
-import { AutoClientInterface } from "@ai16z/client-auto";
-import { DiscordClientInterface } from "@ai16z/client-discord";
+import { PostgresDatabaseAdapter } from "@ai16z/adapter-postgres";
+// import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
+// import { AutoClientInterface } from "@ai16z/client-auto";
+// import { DiscordClientInterface } from "@ai16z/client-discord";
 // import { FarcasterAgentClient } from "@ai16z/client-farcaster";
 // import { LensAgentClient } from "@ai16z/client-lens";
 // import { SlackClientInterface } from "@ai16z/client-slack";
-import { TelegramClientInterface } from "@ai16z/client-telegram";
+// import { TelegramClientInterface } from "@ai16z/client-telegram";
 import { TwitterClientInterface } from "@ai16z/client-twitter";
 import express from "express";
 import cors from "cors";
@@ -57,7 +57,7 @@ import { createNodePlugin } from "@ai16z/plugin-node";
 // import { zksyncEraPlugin } from "@ai16z/plugin-zksync-era";
 // import { maitrixPlugin } from "@ai16z/plugin-maitrix";
 // import { agentisePlugin } from "@ai16z/plugin-agentise";
-import Database from "better-sqlite3";
+// import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -323,31 +323,31 @@ export function getTokenForProvider(
 function initializeDatabase(dataDir: string) {
     if (process.env.POSTGRES_URL) {
         elizaLogger.info("Initializing PostgreSQL connection...");
-        // const db = new PostgresDatabaseAdapter({
-        //     connectionString: process.env.POSTGRES_URL,
-        //     parseInputs: true,
-        // });
+        const db = new PostgresDatabaseAdapter({
+            connectionString: process.env.POSTGRES_URL,
+            parseInputs: true,
+        });
 
-        // // Test the connection
-        // db.init()
-        //     .then(() => {
-        //         elizaLogger.success(
-        //             "Successfully connected to PostgreSQL database"
-        //         );
-        //     })
-        //     .catch((error) => {
-        //         elizaLogger.error("Failed to connect to PostgreSQL:", error);
-        //     });
+        // Test the connection
+        db.init()
+            .then(() => {
+                elizaLogger.success(
+                    "Successfully connected to PostgreSQL database"
+                );
+            })
+            .catch((error) => {
+                elizaLogger.error("Failed to connect to PostgreSQL:", error);
+            });
 
-        // return db;
-    }
-    else {
-        const filePath =
-            process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
-        // ":memory:";
-        const db = new SqliteDatabaseAdapter(new Database(filePath));
         return db;
     }
+    // else {
+    //     const filePath =
+    //         process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
+    //     // ":memory:";
+    //     const db = new SqliteDatabaseAdapter(new Database(filePath));
+    //     return db;
+    // }
 }
 
 // also adds plugins from character file into the runtime
@@ -362,20 +362,20 @@ export async function initializeClients(
         character.clients?.map((str) => str.toLowerCase()) || [];
     elizaLogger.log("initializeClients", clientTypes, "for", character.name);
 
-    if (clientTypes.includes(Clients.DIRECT)) {
-        const autoClient = await AutoClientInterface.start(runtime);
-        if (autoClient) clients.auto = autoClient;
-    }
+    // if (clientTypes.includes(Clients.DIRECT)) {
+    //     const autoClient = await AutoClientInterface.start(runtime);
+    //     if (autoClient) clients.auto = autoClient;
+    // }
 
-    if (clientTypes.includes(Clients.DISCORD)) {
-        const discordClient = await DiscordClientInterface.start(runtime);
-        if (discordClient) clients.discord = discordClient;
-    }
+    // if (clientTypes.includes(Clients.DISCORD)) {
+    //     const discordClient = await DiscordClientInterface.start(runtime);
+    //     if (discordClient) clients.discord = discordClient;
+    // }
 
-    if (clientTypes.includes(Clients.TELEGRAM)) {
-        const telegramClient = await TelegramClientInterface.start(runtime);
-        if (telegramClient) clients.telegram = telegramClient;
-    }
+    // if (clientTypes.includes(Clients.TELEGRAM)) {
+    //     const telegramClient = await TelegramClientInterface.start(runtime);
+    //     if (telegramClient) clients.telegram = telegramClient;
+    // }
 
     if (clientTypes.includes(Clients.TWITTER)) {
         const twitterClient = await TwitterClientInterface.start(runtime);
@@ -807,7 +807,7 @@ if (process.env.AGENT_RUNTIME_MANAGEMENT === "true") {
             sucess:true
         })
     })
-    
+
     app.post(
         "/load-agent",
         async (req: express.Request, res: express.Response) => {

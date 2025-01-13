@@ -1,9 +1,6 @@
 packages:
     - "docs"
-    - "packages/adapter-sqlite"
-    - "packages/client-auto"
-    - "packages/client-discord"
-    - "packages/client-telegram"
+    - "packages/adapter-postgres"
     - "packages/client-twitter"
     - "packages/plugin-image-generation"
     - "packages/core"
