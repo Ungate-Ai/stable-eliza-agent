@@ -9,7 +9,7 @@ RUN npm install -g pnpm@9.4.0 && \
 RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /app
 COPY agent ./agent
-
+COPY .env ./.env
 COPY packages/adapter-postgres ./packages/adapter-postgres
 COPY packages/client-twitter ./packages/client-twitter
 COPY packages/core ./packages/core
