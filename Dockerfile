@@ -10,7 +10,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 WORKDIR /app
 COPY agent ./agent
 COPY .env ./.env
-COPY packages/adapter-postgres ./packages/adapter-postgres
+COPY packages/adapter-sqlite ./packages/adapter-sqlite
 COPY packages/client-twitter ./packages/client-twitter
 COPY packages/core ./packages/core
 COPY packages/client-direct ./packages/client-direct

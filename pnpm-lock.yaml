@@ -102,9 +102,9 @@ importers:
 
   agent:
     dependencies:
-      '@ai16z/adapter-postgres':
+      '@ai16z/adapter-sqlite':
         specifier: workspace:*
-        version: link:../packages/adapter-postgres
+        version: link:../packages/adapter-sqlite
       '@ai16z/client-direct':
         specifier: workspace:*
         version: link:../packages/client-direct
@@ -204,17 +204,23 @@ importers:
         specifier: 4.2.10
         version: 4.2.10(typedoc@0.26.11(typescript@5.6.3))
 
-  packages/adapter-postgres:
+  packages/adapter-sqlite:
     dependencies:
       '@ai16z/eliza':
         specifier: workspace:*
         version: link:../core
-      '@types/pg':
-        specifier: 8.11.10
-        version: 8.11.10
-      pg:
-        specifier: 8.13.1
-        version: 8.13.1
+      '@types/better-sqlite3':
+        specifier: 7.6.12
+        version: 7.6.12
+      better-sqlite3:
+        specifier: 11.6.0
+        version: 11.6.0
+      sqlite-vec:
+        specifier: 0.1.6
+        version: 0.1.6
+      whatwg-url:
+        specifier: 7.1.0
+        version: 7.1.0
     devDependencies:
       tsup:
         specifier: 8.3.5
@@ -4303,6 +4309,9 @@ packages:
   '@types/babel__traverse@7.20.6':
     resolution: {integrity: sha512-r1bzfrm0tomOI8g1SzvCaQHo6Lcv6zu0EA+W2kHrt8dyrHQxGzBBL4kdkzIS+jBMV+EYcMAEAqXqYaLJq5rOZg==}
 
+  '@types/better-sqlite3@7.6.12':
+    resolution: {integrity: sha512-fnQmj8lELIj7BSrZQAdBMHEHX8OZLYIHXqAKT1O7tDfLxaINzf00PMjw22r3N/xXh0w/sGHlO6SVaCQ2mj78lg==}
+
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
@@ -4567,9 +4576,6 @@ packages:
   '@types/pdfjs-dist@2.10.378':
     resolution: {integrity: sha512-TRdIPqdsvKmPla44kVy4jv5Nt5vjMfVjbIEke1CRULIrwKNRC4lIiZvNYDJvbUMNCFPNIUcOKhXTyMJrX18IMA==}
     deprecated: This is a stub types definition. pdfjs-dist provides its own type definitions, so you do not need this installed.
-
-  '@types/pg@8.11.10':
-    resolution: {integrity: sha512-LczQUW4dbOQzsH2RQ5qoeJ6qJPdrcM/DcMLoqWQkMLMsq83J5lAX3LXjdkWdpscFy67JSOWDnh7Ny/sPFykmkg==}
 
   '@types/prismjs@1.26.5':
     resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
@@ -5335,6 +5341,9 @@ packages:
 
   bent@7.3.12:
     resolution: {integrity: sha512-T3yrKnVGB63zRuoco/7Ybl7BwwGZR0lceoVG5XmQyMIH9s19SV5m+a8qam4if0zQuAmOQTyPTPmsQBdAorGK3w==}
+
+  better-sqlite3@11.6.0:
+    resolution: {integrity: sha512-2J6k/eVxcFYY2SsTxsXrj6XylzHWPxveCn4fKPKZFv/Vqn/Cd7lOuX4d7rGQXT5zL+97MkNL3nSbCrIoe3LkgA==}
 
   big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
@@ -10239,48 +10248,6 @@ packages:
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
 
-  pg-cloudflare@1.1.1:
-    resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
-
-  pg-connection-string@2.7.0:
-    resolution: {integrity: sha512-PI2W9mv53rXJQEOb8xNR8lH7Hr+EKa6oJa38zsK0S/ky2er16ios1wLKhZyxzD7jUReiWokc9WK5nxSnC7W1TA==}
-
-  pg-int8@1.0.1:
-    resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
-    engines: {node: '>=4.0.0'}
-
-  pg-numeric@1.0.2:
-    resolution: {integrity: sha512-BM/Thnrw5jm2kKLE5uJkXqqExRUY/toLHda65XgFTBTFYZyopbKjBe29Ii3RbkvlsMoFwD+tHeGaCjjv0gHlyw==}
-    engines: {node: '>=4'}
-
-  pg-pool@3.7.0:
-    resolution: {integrity: sha512-ZOBQForurqh4zZWjrgSwwAtzJ7QiRX0ovFkZr2klsen3Nm0aoh33Ls0fzfv3imeH/nw/O27cjdz5kzYJfeGp/g==}
-    peerDependencies:
-      pg: '>=8.0'
-
-  pg-protocol@1.7.0:
-    resolution: {integrity: sha512-hTK/mE36i8fDDhgDFjy6xNOG+LCorxLG3WO17tku+ij6sVHXh1jQUJ8hYAnRhNla4QVD2H8er/FOjc/+EgC6yQ==}
-
-  pg-types@2.2.0:
-    resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
-    engines: {node: '>=4'}
-
-  pg-types@4.0.2:
-    resolution: {integrity: sha512-cRL3JpS3lKMGsKaWndugWQoLOCoP+Cic8oseVcbr0qhPzYD5DWXK+RZ9LY9wxRf7RQia4SCwQlXk0q6FCPrVng==}
-    engines: {node: '>=10'}
-
-  pg@8.13.1:
-    resolution: {integrity: sha512-OUir1A0rPNZlX//c7ksiu7crsGZTKSOXJPgtNiHGIlC9H0lO+NC6ZDYksSgBYY/thSWhnSRBv8w1lieNNGATNQ==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
-
-  pgpass@1.0.5:
-    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
-
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
@@ -10803,41 +10770,6 @@ packages:
   postcss@8.4.49:
     resolution: {integrity: sha512-OCVPnIObs4N29kxTjzLfUryOkvZEq+pf8jTF0lg8E7uETuWHA+v7j3c/xJmiqpX450191LlmZfUKkXxkTry7nA==}
     engines: {node: ^10 || ^12 || >=14}
-
-  postgres-array@2.0.0:
-    resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
-    engines: {node: '>=4'}
-
-  postgres-array@3.0.2:
-    resolution: {integrity: sha512-6faShkdFugNQCLwucjPcY5ARoW1SlbnrZjmGl0IrrqewpvxvhSLHimCVzqeuULCbG0fQv7Dtk1yDbG3xv7Veog==}
-    engines: {node: '>=12'}
-
-  postgres-bytea@1.0.0:
-    resolution: {integrity: sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==}
-    engines: {node: '>=0.10.0'}
-
-  postgres-bytea@3.0.0:
-    resolution: {integrity: sha512-CNd4jim9RFPkObHSjVHlVrxoVQXz7quwNFpz7RY1okNNme49+sVyiTvTRobiLV548Hx/hb1BG+iE7h9493WzFw==}
-    engines: {node: '>= 6'}
-
-  postgres-date@1.0.7:
-    resolution: {integrity: sha512-suDmjLVQg78nMK2UZ454hAG+OAW+HQPZ6n++TNDUX+L0+uUlLywnoxJKDou51Zm+zTCjrCl0Nq6J9C5hP9vK/Q==}
-    engines: {node: '>=0.10.0'}
-
-  postgres-date@2.1.0:
-    resolution: {integrity: sha512-K7Juri8gtgXVcDfZttFKVmhglp7epKb1K4pgrkLxehjqkrgPhfG6OO8LHLkfaqkbpjNRnra018XwAr1yQFWGcA==}
-    engines: {node: '>=12'}
-
-  postgres-interval@1.2.0:
-    resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
-    engines: {node: '>=0.10.0'}
-
-  postgres-interval@3.0.0:
-    resolution: {integrity: sha512-BSNDnbyZCXSxgA+1f5UU2GmwhoI0aU5yMxRGO8CdFEcY2BQF9xm/7MqKnYoM1nJDk8nONNWDk9WeSmePFhQdlw==}
-    engines: {node: '>=12'}
-
-  postgres-range@1.1.4:
-    resolution: {integrity: sha512-i/hbxIE9803Alj/6ytL7UHQxRvZkI9O4Sy+J3HGc4F4oo/2eQAjTSNJ0bfxyse3bH0nuVesCk+3IRLaMtG3H6w==}
 
   prebuild-install@7.1.2:
     resolution: {integrity: sha512-UnNke3IQb6sgarcZIDU3gbMeTp/9SSU1DAIkil7PrqG1vZlBtY5msYccSKSHDqa3hNg436IXK+SNImReuA1wEQ==}
@@ -11868,6 +11800,29 @@ packages:
 
   sprintf-js@1.1.3:
     resolution: {integrity: sha512-Oo+0REFV59/rz3gfJNKQiBlwfHaSESl1pcGyABQsnnIfWOFt6JNj5gCog2U6MLZ//IGYD+nA8nI+mTShREReaA==}
+
+  sqlite-vec-darwin-arm64@0.1.6:
+    resolution: {integrity: sha512-5duw/xhM3xE6BCQd//eAkyHgBp9FIwK6veldRhPG96dT6Zpjov3bG02RuE7JAQj0SVJYRW8bJwZ4LxqW0+Q7Dw==}
+    cpu: [arm64]
+    os: [darwin]
+
+  sqlite-vec-darwin-x64@0.1.6:
+    resolution: {integrity: sha512-MFkKjNfJ5pamFHhyTsrqdxALrjuvpSEZdu6Q/0vMxFa6sr5YlfabeT5xGqEbuH0iobsT1Hca5EZxLhLy0jHYkw==}
+    cpu: [x64]
+    os: [darwin]
+
+  sqlite-vec-linux-x64@0.1.6:
+    resolution: {integrity: sha512-411tWPswywIzdkp+zsAUav4A03f0FjnNfpZFlOw8fBebFR74RSFkwM8Xryf18gLHiYAXUBI4mjY9+/xjwBjKpg==}
+    cpu: [x64]
+    os: [linux]
+
+  sqlite-vec-windows-x64@0.1.6:
+    resolution: {integrity: sha512-Dy9/KlKJDrjuQ/RRkBqGkMZuSh5bTJDMMOFZft9VJZaXzpYxb5alpgdvD4bbKegpDdfPi2BT4+PBivsNJSlMoQ==}
+    cpu: [x64]
+    os: [win32]
+
+  sqlite-vec@0.1.6:
+    resolution: {integrity: sha512-hQZU700TU2vWPXZYDULODjKXeMio6rKX7UpPN7Tq9qjPW671IEgURGrcC5LDBMl0q9rBvAuzmcmJmImMqVibYQ==}
 
   srcset@4.0.0:
     resolution: {integrity: sha512-wvLeHgcVHKO8Sc/H/5lkGreJQVeYMm9rlmt8PuR1xE31rIuXhuzznUUqAt8MqLhB3MqJdFzlNAfpcWnxiFUcPw==}
@@ -18713,6 +18668,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.26.3
 
+  '@types/better-sqlite3@7.6.12':
+    dependencies:
+      '@types/node': 22.8.4
+
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
@@ -19032,12 +18991,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
-
-  '@types/pg@8.11.10':
-    dependencies:
-      '@types/node': 22.8.4
-      pg-protocol: 1.7.0
-      pg-types: 4.0.2
 
   '@types/prismjs@1.26.5': {}
 
@@ -19935,6 +19888,11 @@ snapshots:
       bytesish: 0.4.4
       caseless: 0.12.0
       is-stream: 2.0.1
+
+  better-sqlite3@11.6.0:
+    dependencies:
+      bindings: 1.5.0
+      prebuild-install: 7.1.2
 
   big.js@5.2.2: {}
 
@@ -26101,53 +26059,6 @@ snapshots:
 
   performance-now@2.1.0: {}
 
-  pg-cloudflare@1.1.1:
-    optional: true
-
-  pg-connection-string@2.7.0: {}
-
-  pg-int8@1.0.1: {}
-
-  pg-numeric@1.0.2: {}
-
-  pg-pool@3.7.0(pg@8.13.1):
-    dependencies:
-      pg: 8.13.1
-
-  pg-protocol@1.7.0: {}
-
-  pg-types@2.2.0:
-    dependencies:
-      pg-int8: 1.0.1
-      postgres-array: 2.0.0
-      postgres-bytea: 1.0.0
-      postgres-date: 1.0.7
-      postgres-interval: 1.2.0
-
-  pg-types@4.0.2:
-    dependencies:
-      pg-int8: 1.0.1
-      pg-numeric: 1.0.2
-      postgres-array: 3.0.2
-      postgres-bytea: 3.0.0
-      postgres-date: 2.1.0
-      postgres-interval: 3.0.0
-      postgres-range: 1.1.4
-
-  pg@8.13.1:
-    dependencies:
-      pg-connection-string: 2.7.0
-      pg-pool: 3.7.0(pg@8.13.1)
-      pg-protocol: 1.7.0
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
-
-  pgpass@1.0.5:
-    dependencies:
-      split2: 4.2.0
-
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
@@ -26729,28 +26640,6 @@ snapshots:
       nanoid: 3.3.8
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  postgres-array@2.0.0: {}
-
-  postgres-array@3.0.2: {}
-
-  postgres-bytea@1.0.0: {}
-
-  postgres-bytea@3.0.0:
-    dependencies:
-      obuf: 1.1.2
-
-  postgres-date@1.0.7: {}
-
-  postgres-date@2.1.0: {}
-
-  postgres-interval@1.2.0:
-    dependencies:
-      xtend: 4.0.2
-
-  postgres-interval@3.0.0: {}
-
-  postgres-range@1.1.4: {}
 
   prebuild-install@7.1.2:
     dependencies:
@@ -28105,6 +27994,25 @@ snapshots:
   sprintf-js@1.1.2: {}
 
   sprintf-js@1.1.3: {}
+
+  sqlite-vec-darwin-arm64@0.1.6:
+    optional: true
+
+  sqlite-vec-darwin-x64@0.1.6:
+    optional: true
+
+  sqlite-vec-linux-x64@0.1.6:
+    optional: true
+
+  sqlite-vec-windows-x64@0.1.6:
+    optional: true
+
+  sqlite-vec@0.1.6:
+    optionalDependencies:
+      sqlite-vec-darwin-arm64: 0.1.6
+      sqlite-vec-darwin-x64: 0.1.6
+      sqlite-vec-linux-x64: 0.1.6
+      sqlite-vec-windows-x64: 0.1.6
 
   srcset@4.0.0: {}
 

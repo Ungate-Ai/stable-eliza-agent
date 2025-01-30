@@ -1,5 +1,5 @@
-import { PostgresDatabaseAdapter } from "@ai16z/adapter-postgres";
-// import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
+// import { PostgresDatabaseAdapter } from "@ai16z/adapter-postgres";
+import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
 // import { AutoClientInterface } from "@ai16z/client-auto";
 // import { DiscordClientInterface } from "@ai16z/client-discord";
 // import { FarcasterAgentClient } from "@ai16z/client-farcaster";
@@ -57,7 +57,7 @@ import { createNodePlugin } from "@ai16z/plugin-node";
 // import { zksyncEraPlugin } from "@ai16z/plugin-zksync-era";
 // import { maitrixPlugin } from "@ai16z/plugin-maitrix";
 // import { agentisePlugin } from "@ai16z/plugin-agentise";
-// import Database from "better-sqlite3";
+import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -321,32 +321,32 @@ export function getTokenForProvider(
 }
 
 function initializeDatabase(dataDir: string) {
-    if (process.env.POSTGRES_URL) {
-        elizaLogger.info("Initializing PostgreSQL connection...");
-        const db = new PostgresDatabaseAdapter({
-            connectionString: process.env.POSTGRES_URL,
-            parseInputs: true,
-        });
+    // if (process.env.POSTGRES_URL) {
+    //     elizaLogger.info("Initializing PostgreSQL connection...");
+    //     const db = new PostgresDatabaseAdapter({
+    //         connectionString: process.env.POSTGRES_URL,
+    //         parseInputs: true,
+    //     });
 
-        // Test the connection
-        db.init()
-            .then(() => {
-                elizaLogger.success(
-                    "Successfully connected to PostgreSQL database"
-                );
-            })
-            .catch((error) => {
-                elizaLogger.error("Failed to connect to PostgreSQL:", error);
-            });
+    //     // Test the connection
+    //     db.init()
+    //         .then(() => {
+    //             elizaLogger.success(
+    //                 "Successfully connected to PostgreSQL database"
+    //             );
+    //         })
+    //         .catch((error) => {
+    //             elizaLogger.error("Failed to connect to PostgreSQL:", error);
+    //         });
 
-        return db;
-    }
-    // else {
-    //     const filePath =
-    //         process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
-    //     // ":memory:";
-    //     const db = new SqliteDatabaseAdapter(new Database(filePath));
     //     return db;
+    // }
+    // else {
+        const filePath =
+            process.env.SQLITE_FILE ?? path.resolve(dataDir, "db.sqlite");
+        // ":memory:";
+        const db = new SqliteDatabaseAdapter(new Database(filePath));
+        return db;
     // }
 }
 

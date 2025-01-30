@@ -1,6 +1,6 @@
 packages:
     - "docs"
-    - "packages/adapter-postgres"
+    - "packages/adapter-sqlite"
     - "packages/client-twitter"
     - "packages/plugin-image-generation"
     - "packages/core"
