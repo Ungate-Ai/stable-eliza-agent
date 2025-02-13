@@ -15,7 +15,6 @@ docker-compose*.yml
 
 LICENSE
 
-*.env
 *.example
 
 *node_modules*
