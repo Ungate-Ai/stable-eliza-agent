@@ -19,6 +19,7 @@ COPY packages/plugin-image-generation ./packages/plugin-image-generation
 COPY .env ./.env
 COPY scripts ./scripts
 COPY characters ./characters
+COPY client ./client
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
 RUN pnpm install

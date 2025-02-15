@@ -8,3 +8,4 @@ packages:
     - "packages/plugin-node"
     - "web-agent"
     - "agent"
+    - "client"
