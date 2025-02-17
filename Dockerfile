@@ -22,6 +22,6 @@ COPY characters ./characters
 COPY client ./client
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json ./
-RUN pnpm install
+RUN pnpm install --no-frozen-lockfile
 RUN pnpm run build-docker
 
