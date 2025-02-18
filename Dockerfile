@@ -16,7 +16,6 @@ COPY packages/core ./packages/core
 COPY packages/client-direct ./packages/client-direct
 COPY packages/plugin-node ./packages/plugin-node
 COPY packages/plugin-image-generation ./packages/plugin-image-generation
-COPY .env ./.env
 COPY scripts ./scripts
 COPY characters ./characters
 COPY client ./client
